@@ -304,6 +304,10 @@ module.directive("mdpDatePicker", ["$mdpDatePicker", "$timeout", function($mdpDa
             "maxDate": "=mdMaxDate"
         },
         link: function(scope, element, attrs, ngModel) {
+			if (attrs.readonly || attrs.disabled) {
+				return;
+			}
+        	
             if ('undefined' !== typeof attrs.type && 'date' === attrs.type && ngModel) {
                 angular.element(element).on("click", function(ev) {
                 	ev.preventDefault();
