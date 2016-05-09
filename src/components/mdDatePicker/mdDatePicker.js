@@ -14,19 +14,19 @@ function DatePickerCtrl($scope, $mdDialog, $mdMedia, $timeout, currentDate, minD
     this.init = function() {
     	// validate min and max date
     	if (this.minMoment && this.maxMoment) {
-    		if (this.maxMoment.isBefore(this.minMoment)) {
+    		if (this.maxMoment.isBefore(this.minMoment, "days")) {
     			this.maxMoment = moment(this.minMoment).add(1, 'days');
     		}
     	}
     	
     	if (this.currentMoment) {
     		// check min date
-	    	if (this.minMoment && this.currentMoment.isBefore(this.minMoment)) {
+	    	if (this.minMoment && this.currentMoment.isBefore(this.minMoment, "days")) {
     			this.currentMoment = moment(this.minMoment);
 	    	}
 	    	
 	    	// check max date
-	    	if (this.maxMoment && this.currentMoment.isAfter(this.maxMoment)) {
+	    	if (this.maxMoment && this.currentMoment.isAfter(this.maxMoment, "days")) {
     			this.currentMoment = moment(this.maxMoment);
 	    	}
     	}
@@ -98,11 +98,11 @@ function DatePickerCtrl($scope, $mdDialog, $mdMedia, $timeout, currentDate, minD
     this.confirm = function() {
     	var date = this.currentMoment;
     	
-    	if (this.minMoment && this.currentMoment.isBefore(this.minMoment)) {
+    	if (this.minMoment && this.currentMoment.isBefore(this.minMoment, "days")) {
     		date = moment(this.minMoment);
     	}
     	
-    	if (this.maxMoment && this.currentMoment.isAfter(this.maxMoment)) {
+    	if (this.maxMoment && this.currentMoment.isAfter(this.maxMoment, "days")) {
     		date = moment(this.maxMoment);
     	}  	
     	
@@ -313,19 +313,19 @@ module.directive("mdpDatePicker", ["$mdpDatePicker", "$timeout", function($mdpDa
                 			
                 			// validate min and max date
                         	if (minMoment && maxMoment) {
-                        		if (maxMoment.isBefore(minMoment)) {
+                        		if (maxMoment.isBefore(minMoment, "days")) {
                         			maxMoment = moment(minMoment).add(1, 'days');
                         		}
                         	}
                 			
                 			if (minMoment && minMoment.isValid()) {
                 				minMoment.startOf("day");
-                				ngModel.$setValidity('mindate', selectedMoment.toDate() >= minMoment.toDate());
+                				ngModel.$setValidity('mindate', selectedMoment.isSameOrAfter(minMoment, "days"));
                 			}
                 			
                 			if (maxMoment && maxMoment.isValid()) {
                 				maxMoment.startOf("day");
-                				ngModel.$setValidity('maxdate', selectedMoment.toDate() <= maxMoment.toDate());
+                				ngModel.$setValidity('maxdate', selectedMoment.isSameOrBefore(minMoment, "days"));
                 			}
                     	      
                 			ngModel.$setViewValue(selectedMoment.format("YYYY-MM-DD")); 
