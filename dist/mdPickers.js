@@ -332,7 +332,7 @@ module.directive("mdpDatePicker", ["$mdpDatePicker", "$timeout", function($mdpDa
                 			
                 			if (maxMoment && maxMoment.isValid()) {
                 				maxMoment.startOf("day");
-                				ngModel.$setValidity('maxdate', selectedMoment.isSameOrBefore(minMoment, "days"));
+                				ngModel.$setValidity('maxdate', selectedMoment.isSameOrBefore(maxMoment, "days"));
                 			}
                     	      
                 			ngModel.$setViewValue(selectedMoment.format("YYYY-MM-DD")); 
