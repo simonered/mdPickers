@@ -264,25 +264,28 @@ module.directive("mdpTimePicker", ["$mdpTimePicker", "$timeout", function($mdpTi
         restrict: 'A',
         require: '?ngModel',
         scope: {
-        	format : "@mdPattern"
+        	format : "@mdPattern",
+        	"useMobileDefault" : "=useMobileDefault"
         },
         link: function(scope, element, attrs, ngModel) {
             if ('undefined' !== typeof attrs.type && 'time' === attrs.type && ngModel) {
-                angular.element(element).on("click", function(ev) {
-                	ev.preventDefault();
-                	
-                	$mdpTimePicker(ev, ngModel.$modelValue).then(function(selectedDate) {
-                		$timeout(function() {
-                			var format = "HH:mm";
-                    	    if (scope.format) {
-                    	    	format = scope.format;
-                    	    }  
-                			
-                			ngModel.$setViewValue(moment(selectedDate).format(format)); 
-                			ngModel.$render(); 
-                          });
-                      });
-                });
+            	if ('undefined' !== typeof scope.useMobileDefault || detect.parse(navigator.userAgent).device.type.toLowerCase() !== "mobile") {
+	                angular.element(element).on("click", function(ev) {
+	                	ev.preventDefault();
+	                	
+	                	$mdpTimePicker(ev, ngModel.$modelValue).then(function(selectedDate) {
+	                		$timeout(function() {
+	                			var format = "HH:mm";
+	                    	    if (scope.format) {
+	                    	    	format = scope.format;
+	                    	    }  
+	                			
+	                			ngModel.$setViewValue(moment(selectedDate).format(format)); 
+	                			ngModel.$render(); 
+	                          });
+	                      });
+	                });
+            	}
             }
         }
     };

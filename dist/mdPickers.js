@@ -301,7 +301,8 @@ module.directive("mdpDatePicker", ["$mdpDatePicker", "$timeout", function($mdpDa
         require: '?ngModel',
         scope: {
             "minDate": "=mdMinDate",
-            "maxDate": "=mdMaxDate"
+            "maxDate": "=mdMaxDate",
+            "useMobileDefault" : "=useMobileDefault"
         },
         link: function(scope, element, attrs, ngModel) {
 			if (attrs.readonly || attrs.disabled) {
@@ -309,37 +310,39 @@ module.directive("mdpDatePicker", ["$mdpDatePicker", "$timeout", function($mdpDa
 			}
         	
             if ('undefined' !== typeof attrs.type && 'date' === attrs.type && ngModel) {
-                angular.element(element).on("click", function(ev) {
-                	ev.preventDefault();
-                	
-                	$mdpDatePicker(ev, ngModel.$modelValue, scope.minDate, scope.maxDate).then(function(selectedDate) {
-                		$timeout(function() {
-                			var selectedMoment = moment(selectedDate).startOf("day");
-                			var minMoment = scope.minDate ? moment(scope.minDate) : null;
-                			var maxMoment = scope.maxDate ? moment(scope.maxDate) : null;
-                			
-                			// validate min and max date
-                        	if (minMoment && maxMoment) {
-                        		if (maxMoment.isBefore(minMoment, "days")) {
-                        			maxMoment = moment(minMoment).add(1, 'days');
-                        		}
-                        	}
-                			
-                			if (minMoment && minMoment.isValid()) {
-                				minMoment.startOf("day");
-                				ngModel.$setValidity('mindate', selectedMoment.isSameOrAfter(minMoment, "days"));
-                			}
-                			
-                			if (maxMoment && maxMoment.isValid()) {
-                				maxMoment.startOf("day");
-                				ngModel.$setValidity('maxdate', selectedMoment.isSameOrBefore(maxMoment, "days"));
-                			}
-                    	      
-                			ngModel.$setViewValue(selectedMoment.format("YYYY-MM-DD")); 
-                			ngModel.$render(); 
-                          });
-                      });
-                });
+            	if ('undefined' !== typeof scope.useMobileDefault || detect.parse(navigator.userAgent).device.type.toLowerCase() !== "mobile") {
+	                angular.element(element).on("click", function(ev) {
+	                	ev.preventDefault();
+	                	
+	                	$mdpDatePicker(ev, ngModel.$modelValue, scope.minDate, scope.maxDate).then(function(selectedDate) {
+	                		$timeout(function() {
+	                			var selectedMoment = moment(selectedDate);
+	                			var minMoment = scope.minDate ? moment(scope.minDate) : null;
+	                			var maxMoment = scope.maxDate ? moment(scope.maxDate) : null;
+	                			
+	                			// validate min and max date
+	                        	if (minMoment && maxMoment) {
+	                        		if (maxMoment.isBefore(minMoment, "days")) {
+	                        			maxMoment = moment(minMoment).add(1, 'days');
+	                        		}
+	                        	}
+	                			
+	                			if (minMoment && minMoment.isValid()) {
+	                				minMoment.startOf("day");
+	                				ngModel.$setValidity('mindate', selectedMoment.isSameOrAfter(minMoment, "days"));
+	                			}
+	                			
+	                			if (maxMoment && maxMoment.isValid()) {
+	                				maxMoment.startOf("day");
+	                				ngModel.$setValidity('maxdate', selectedMoment.isSameOrBefore(maxMoment, "days"));
+	                			}
+	                    	      
+	                			ngModel.$setViewValue(selectedMoment.format("YYYY-MM-DD")); 
+	                			ngModel.$render(); 
+	                          });
+	                      });
+	                });
+            	}
             }
         }
     };
@@ -610,25 +613,28 @@ module.directive("mdpTimePicker", ["$mdpTimePicker", "$timeout", function($mdpTi
         restrict: 'A',
         require: '?ngModel',
         scope: {
-        	format : "@mdPattern"
+        	format : "@mdPattern",
+        	"useMobileDefault" : "=useMobileDefault"
         },
         link: function(scope, element, attrs, ngModel) {
             if ('undefined' !== typeof attrs.type && 'time' === attrs.type && ngModel) {
-                angular.element(element).on("click", function(ev) {
-                	ev.preventDefault();
-                	
-                	$mdpTimePicker(ev, ngModel.$modelValue).then(function(selectedDate) {
-                		$timeout(function() {
-                			var format = "HH:mm";
-                    	    if (scope.format) {
-                    	    	format = scope.format;
-                    	    }  
-                			
-                			ngModel.$setViewValue(moment(selectedDate).format(format)); 
-                			ngModel.$render(); 
-                          });
-                      });
-                });
+            	if ('undefined' !== typeof scope.useMobileDefault || detect.parse(navigator.userAgent).device.type.toLowerCase() !== "mobile") {
+	                angular.element(element).on("click", function(ev) {
+	                	ev.preventDefault();
+	                	
+	                	$mdpTimePicker(ev, ngModel.$modelValue).then(function(selectedDate) {
+	                		$timeout(function() {
+	                			var format = "HH:mm";
+	                    	    if (scope.format) {
+	                    	    	format = scope.format;
+	                    	    }  
+	                			
+	                			ngModel.$setViewValue(moment(selectedDate).format(format)); 
+	                			ngModel.$render(); 
+	                          });
+	                      });
+	                });
+            	}
             }
         }
     };
