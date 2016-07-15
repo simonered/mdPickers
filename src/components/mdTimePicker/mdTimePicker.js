@@ -265,11 +265,11 @@ module.directive("mdpTimePicker", ["$mdpTimePicker", "$timeout", function($mdpTi
         require: '?ngModel',
         scope: {
         	format : "@mdPattern",
-        	"useMobileDefault" : "=useMobileDefault"
+        	"useMobile" : "=useMobile"
         },
         link: function(scope, element, attrs, ngModel) {
             if ('undefined' !== typeof attrs.type && 'time' === attrs.type && ngModel) {
-            	if ('undefined' !== typeof scope.useMobileDefault || detect.parse(navigator.userAgent).device.type.toLowerCase() !== "mobile") {
+            	if ('undefined' !== typeof scope.useMobile || detect.parse(navigator.userAgent).device.type.toLowerCase() !== "mobile") {
 	                angular.element(element).on("click", function(ev) {
 	                	ev.preventDefault();
 	                	

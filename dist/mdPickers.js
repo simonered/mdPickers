@@ -7,7 +7,7 @@ var module = angular.module("mdPickers", [
 ]); 
 /* global = */
 
-function DatePickerCtrl($scope, $mdDialog, $mdMedia, $timeout, currentDate, minDate, maxDate) {
+function DatePickerCtrl($scope, $mdDialog, $mdMedia, $timeout, currentDate, minDate, maxDate, useUtc, utcOffset) {
     var self = this;
 
     this.currentDate = currentDate;
@@ -19,6 +19,11 @@ function DatePickerCtrl($scope, $mdDialog, $mdMedia, $timeout, currentDate, minD
     $scope.$mdMedia = $mdMedia;
     
     this.init = function() {
+    	// convert moments to utc/utcOffset
+    	this.currentMoment = this.normalizeMoment(this.currentMoment);
+    	this.minMoment = this.normalizeMoment(this.minMoment);
+    	this.maxMoment = this.normalizeMoment(this.maxMoment);
+    	
     	// validate min and max date
     	if (this.minMoment && this.maxMoment) {
     		if (this.maxMoment.isBefore(this.minMoment, "days")) {
@@ -57,6 +62,21 @@ function DatePickerCtrl($scope, $mdDialog, $mdMedia, $timeout, currentDate, minD
 	    };
     };
     
+    this.normalizeMoment = function(m) {
+    	if (!m) {
+    		return undefined;
+    	}
+    	
+    	if (useUtc) {
+    		m = moment.utc([m.year(), m.month(), m.date()]);
+    	
+    	} else if (utcOffset) {
+    		m = moment.utc([m.year(), m.month(), m.date()]).utcOffset(utcOffset, true);
+    	}
+    	
+    	return m;
+    };
+    
     self.init();
     
     $scope.year = this.currentMoment.year();
@@ -79,20 +99,20 @@ function DatePickerCtrl($scope, $mdDialog, $mdMedia, $timeout, currentDate, minD
     };
     
     this.today = function() {
-    	self.currentMoment = moment();
+    	self.currentMoment = this.normalizeMoment(moment());
     	this.selectYear(self.currentMoment.year());
     };
     
     this.isTodayAvailable = function() {
     	var minValid = true, maxValid = true;
-    	var date = moment().startOf("day").toDate();
+    	var today = this.normalizeMoment(moment());
     	
     	if (this.minMoment) {
-    		minValid = date >= this.minMoment.toDate();
+    		minValid = today.isSameOrAfter(this.minMoment, "days");
     	}
     	
     	if (this.maxMoment) {
-    		maxValid = date <= this.maxMoment.toDate();
+    		maxValid = today.isSameOrBefore(this.maxMoment, "days");
     	}
     	
     	return minValid && maxValid;
@@ -138,13 +158,14 @@ module.provider("$mdpDatePicker", function() {
     };
     
     this.$get = ["$mdDialog", function($mdDialog) {
-        var datePicker = function(targetEvent, currentDate, minDate, maxDate) {
+        var datePicker = function(targetEvent, currentDate, minDate, maxDate, useUtc, utcOffset) {
             if (!angular.isDate(currentDate)) currentDate = Date.now();
             if (!angular.isDate(minDate)) minDate = null;
             if (!angular.isDate(maxDate)) maxDate = null;
+            if (!useUtc || "undefined" === typeof useUtc) useUtc = false;
     
             return $mdDialog.show({
-                controller:  ['$scope', '$mdDialog', '$mdMedia', '$timeout', 'currentDate', 'minDate', 'maxDate', DatePickerCtrl],
+                controller:  ['$scope', '$mdDialog', '$mdMedia', '$timeout', 'currentDate', 'minDate', 'maxDate', 'useUtc', 'utcOffset', DatePickerCtrl],
                 controllerAs: 'datepicker',
                 clickOutsideToClose: true,
                 template: '<md-dialog aria-label="" class="mdp-datepicker" ng-class="{ \'portrait\': !$mdMedia(\'gt-xs\') }">' +
@@ -177,7 +198,9 @@ module.provider("$mdpDatePicker", function() {
                 locals: {
                     currentDate: currentDate,
                     minDate: minDate, 
-                    maxDate: maxDate
+                    maxDate: maxDate,
+                    useUtc: useUtc, 
+                    utcOffset: utcOffset
                 }
             });
         };
@@ -209,14 +232,14 @@ function CalendarCtrl($scope) {
     
     this.isValidDay = function(day) {
     	var minValid = true, maxValid = true;
-    	var date = moment($scope.date).date(day).startOf("day").toDate();
+    	var date = moment($scope.date).date(day);
     	
     	if ($scope.minDate) {
-    		minValid = date >= $scope.minDate.toDate();
+    		minValid = date.isSameOrAfter($scope.minDate);
     	}
     	
     	if ($scope.maxDate) {
-    		maxValid = date <= $scope.maxDate.toDate();
+    		maxValid = date.isSameOrBefore($scope.maxDate);
     	}
     	
     	return minValid && maxValid;
@@ -300,9 +323,12 @@ module.directive("mdpDatePicker", ["$mdpDatePicker", "$timeout", function($mdpDa
         restrict: 'A',
         require: '?ngModel',
         scope: {
-            "minDate": "=mdMinDate",
-            "maxDate": "=mdMaxDate",
-            "useMobileDefault" : "=useMobileDefault"
+        	"ngModel" : "=",
+        	"minDate": "=mdpMinDate",
+            "maxDate": "=mdpMaxDate",
+            "useMobile" : "=mdpUseMobile",
+            "useUtc" : "=mdpUseUtc",
+            "utcOffset" : "=mdpUtcOffset"
         },
         link: function(scope, element, attrs, ngModel) {
 			if (attrs.readonly || attrs.disabled) {
@@ -310,11 +336,11 @@ module.directive("mdpDatePicker", ["$mdpDatePicker", "$timeout", function($mdpDa
 			}
         	
             if ('undefined' !== typeof attrs.type && 'date' === attrs.type && ngModel) {
-            	if ('undefined' !== typeof scope.useMobileDefault || detect.parse(navigator.userAgent).device.type.toLowerCase() !== "mobile") {
+            	if ('undefined' !== typeof scope.useMobile || detect.parse(navigator.userAgent).device.type.toLowerCase() !== "mobile") {
 	                angular.element(element).on("click", function(ev) {
 	                	ev.preventDefault();
 	                	
-	                	$mdpDatePicker(ev, ngModel.$modelValue, scope.minDate, scope.maxDate).then(function(selectedDate) {
+	                	$mdpDatePicker(ev, ngModel.$modelValue, scope.minDate, scope.maxDate, scope.useUtc, scope.utcOffset).then(function(selectedDate) {
 	                		$timeout(function() {
 	                			var selectedMoment = moment(selectedDate);
 	                			var minMoment = scope.minDate ? moment(scope.minDate) : null;
@@ -328,17 +354,19 @@ module.directive("mdpDatePicker", ["$mdpDatePicker", "$timeout", function($mdpDa
 	                        	}
 	                			
 	                			if (minMoment && minMoment.isValid()) {
-	                				minMoment.startOf("day");
 	                				ngModel.$setValidity('mindate', selectedMoment.isSameOrAfter(minMoment, "days"));
 	                			}
 	                			
 	                			if (maxMoment && maxMoment.isValid()) {
-	                				maxMoment.startOf("day");
 	                				ngModel.$setValidity('maxdate', selectedMoment.isSameOrBefore(maxMoment, "days"));
 	                			}
+	                			
+	                			scope.ngModel = selectedMoment.toDate();
 	                    	      
-	                			ngModel.$setViewValue(selectedMoment.format("YYYY-MM-DD")); 
-	                			ngModel.$render(); 
+//	                			ngModel.$setViewValue(selectedMoment.format("YYYY-MM-DD"));
+//	                			ngModel.$modelValue = selectedMoment.toDate();
+//	                			ngModel.$commitViewValue();	                			
+//	                			ngModel.$render();
 	                          });
 	                      });
 	                });
@@ -614,11 +642,11 @@ module.directive("mdpTimePicker", ["$mdpTimePicker", "$timeout", function($mdpTi
         require: '?ngModel',
         scope: {
         	format : "@mdPattern",
-        	"useMobileDefault" : "=useMobileDefault"
+        	"useMobile" : "=useMobile"
         },
         link: function(scope, element, attrs, ngModel) {
             if ('undefined' !== typeof attrs.type && 'time' === attrs.type && ngModel) {
-            	if ('undefined' !== typeof scope.useMobileDefault || detect.parse(navigator.userAgent).device.type.toLowerCase() !== "mobile") {
+            	if ('undefined' !== typeof scope.useMobile || detect.parse(navigator.userAgent).device.type.toLowerCase() !== "mobile") {
 	                angular.element(element).on("click", function(ev) {
 	                	ev.preventDefault();
 	                	
