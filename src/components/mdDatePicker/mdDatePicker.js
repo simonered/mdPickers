@@ -70,7 +70,8 @@ function DatePickerCtrl($scope, $mdDialog, $mdMedia, $timeout, currentDate, minD
     	return m;
     };
     
-    self.init();
+    // init
+    this.init();
     
     $scope.year = this.currentMoment.year();
 
@@ -267,7 +268,7 @@ module.directive("mdpCalendar", ["$animate", function($animate) {
         template: '<div class="mdp-calendar">' +
                     '<div layout="row" layout-align="space-between center">' +
                         '<md-button aria-label="previous month" class="md-icon-button" ng-click="calendar.prevMonth()"><md-icon md-font-set="material-icons"> chevron_left </md-icon></md-button>' +
-                        '<div class="mdp-calendar-monthyear" ng-show="!calendar.animating">{{ date.format("MMMM YYYY") }}</div>' +
+                        '<md-button class="mdp-calendar-monthyear" ng-show="!calendar.animating" ng-click="showYear()">{{ date.format("MMMM YYYY") }}</md-button>' +
                         '<md-button aria-label="next month" class="md-icon-button" ng-click="calendar.nextMonth()"><md-icon md-font-set="material-icons"> chevron_right </md-icon></md-button>' +
                     '</div>' +
                     '<div layout="row" layout-align="space-around center" class="mdp-calendar-week-days" ng-show="!calendar.animating">' +
@@ -283,6 +284,10 @@ module.directive("mdpCalendar", ["$animate", function($animate) {
         controller: ["$scope", CalendarCtrl],
         controllerAs: "calendar",
         link: function(scope, element, attrs, ctrl) {
+        	var datepickerCtrl = scope.$parent.datepicker;
+        	
+        	scope.showYear = datepickerCtrl.showYear;
+        	
             var animElements = [
                 element[0].querySelector(".mdp-calendar-week-days"),
                 element[0].querySelector('.mdp-calendar-days'),
@@ -329,7 +334,10 @@ module.directive("mdpDatePicker", ["$mdpDatePicker", "$timeout", function($mdpDa
 			}
         	
             if ('undefined' !== typeof attrs.type && 'date' === attrs.type && ngModel) {
-            	if ('undefined' !== typeof scope.useMobile || detect.parse(navigator.userAgent).device.type.toLowerCase() !== "mobile") {
+            	if ('undefined' !== typeof scope.useMobile && scope.useMobile && detect.parse(navigator.userAgent).device.type.toLowerCase() === "mobile") {
+            		// use mobile-system default picker
+            		
+            	} else {
 	                angular.element(element).on("click", function(ev) {
 	                	ev.preventDefault();
 	                	
