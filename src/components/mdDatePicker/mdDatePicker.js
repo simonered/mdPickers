@@ -1,21 +1,17 @@
 /* global = */
 
 function DatePickerCtrl($scope, $mdDialog, $mdMedia, $timeout, currentDate, minDate, maxDate, useUtc, utcOffset) {
-    var self = this;
+	$scope.$mdMedia = $mdMedia;
+	
+	var self = this;
 
-    this.currentDate = currentDate;
-    this.currentMoment = moment(self.currentDate);
-    this.minMoment = minDate ? moment(minDate).startOf("day") : null;
-    this.maxMoment = maxDate ? moment(maxDate).startOf("day") : null;
     this.selectingYear = false;
 
-    $scope.$mdMedia = $mdMedia;
-    
     this.init = function() {
-    	// convert moments to utc/utcOffset
-    	this.currentMoment = this.normalizeMoment(this.currentMoment);
-    	this.minMoment = this.normalizeMoment(this.minMoment);
-    	this.maxMoment = this.normalizeMoment(this.maxMoment);
+    	// normalize moments
+    	this.currentMoment = this.normalizeMoment(currentDate);
+    	this.minMoment = this.normalizeMoment(minDate, true);
+    	this.maxMoment = this.normalizeMoment(maxDate, true);
     	
     	// validate min and max date
     	if (this.minMoment && this.maxMoment) {
@@ -36,6 +32,8 @@ function DatePickerCtrl($scope, $mdDialog, $mdMedia, $timeout, currentDate, minD
 	    	}
     	}
     	
+    	$scope.year = this.currentMoment.year();
+    	
     	var startYear = this.minMoment ? this.minMoment.year() : 1900;
     	var endYear = this.maxMoment ? this.maxMoment.year() : null;
     	
@@ -55,10 +53,16 @@ function DatePickerCtrl($scope, $mdDialog, $mdMedia, $timeout, currentDate, minD
 	    };
     };
     
-    this.normalizeMoment = function(m) {
+    this.normalizeMoment = function(m, skipNull) {
     	if (!m) {
-    		return undefined;
+    		if (skipNull) {
+    			return undefined;
+    		}
+    		
+    		m = (useUtc || utcOffset) ? moment().utc(true) : moment();
     	}
+    	
+    	m = moment.isMoment(m) ? m : moment(m); 
     	
     	if (useUtc) {
     		m = moment.utc([m.year(), m.month(), m.date()]);
@@ -70,11 +74,6 @@ function DatePickerCtrl($scope, $mdDialog, $mdMedia, $timeout, currentDate, minD
     	return m;
     };
     
-    // init
-    this.init();
-    
-    $scope.year = this.currentMoment.year();
-
 	this.selectYear = function(year) {
         self.currentMoment.year(year);
         $scope.year = year;
@@ -136,6 +135,9 @@ function DatePickerCtrl($scope, $mdDialog, $mdMedia, $timeout, currentDate, minD
             self.animating = false;
         })  
     };
+    
+    // init
+    this.init();
 }
 
 module.provider("$mdpDatePicker", function() {
@@ -153,7 +155,7 @@ module.provider("$mdpDatePicker", function() {
     
     this.$get = ["$mdDialog", function($mdDialog) {
         var datePicker = function(targetEvent, currentDate, minDate, maxDate, useUtc, utcOffset) {
-            if (!angular.isDate(currentDate)) currentDate = Date.now();
+            if (!angular.isDate(currentDate)) currentDate = null;
             if (!angular.isDate(minDate)) minDate = null;
             if (!angular.isDate(maxDate)) maxDate = null;
             if (!useUtc || "undefined" === typeof useUtc) useUtc = false;
@@ -343,14 +345,29 @@ module.directive("mdpDatePicker", ["$mdpDatePicker", "$timeout", function($mdpDa
 	                	
 	                	$mdpDatePicker(ev, ngModel.$modelValue, scope.minDate, scope.maxDate, scope.useUtc, scope.utcOffset).then(function(selectedDate) {
 	                		$timeout(function() {
-	                			var selectedMoment = moment(selectedDate);
-	                			var minMoment = scope.minDate ? moment(scope.minDate) : null;
-	                			var maxMoment = scope.maxDate ? moment(scope.maxDate) : null;
+	                			var normalizeMoment = function(m) {
+	                		    	if (!m) {
+	                		    		return undefined;
+	                		    	}
+	                		    	
+	                		    	if (scope.useUtc) {
+	                		    		m = moment.utc([m.year(), m.month(), m.date()]);
+	                		    	
+	                		    	} else if (scope.utcOffset) {
+	                		    		m = moment.utc([m.year(), m.month(), m.date()]).utcOffset(scope.utcOffset, true);
+	                		    	}
+	                		    	
+	                		    	return m;
+	                		    };
+	                			
+	                			var selectedMoment = normalizeMoment(moment(selectedDate));
+	                			var minMoment = scope.minDate ? normalizeMoment(moment(scope.minDate)) : null;
+	                			var maxMoment = scope.maxDate ? normalizeMoment(moment(scope.maxDate)) : null;
 	                			
 	                			// validate min and max date
 	                        	if (minMoment && maxMoment) {
 	                        		if (maxMoment.isBefore(minMoment, "days")) {
-	                        			maxMoment = moment(minMoment).add(1, 'days');
+	                        			maxMoment = normalizeMoment(moment(minMoment)).add(1, 'days');
 	                        		}
 	                        	}
 	                			
