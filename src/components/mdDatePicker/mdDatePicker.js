@@ -326,9 +326,9 @@ module.directive("mdpDatePicker", ["$mdpDatePicker", "$timeout", function($mdpDa
         	"ngModel" : "=",
         	"minDate": "=mdpMinDate",
             "maxDate": "=mdpMaxDate",
-            "useMobile" : "=mdpUseMobile",
-            "useUtc" : "=mdpUseUtc",
-            "utcOffset" : "=mdpUtcOffset"
+            "useMobile" : "=?mdpUseMobile",
+            "useUtc" : "=?mdpUseUtc",
+            "utcOffset" : "@mdpUtcOffset"
         },
         link: function(scope, element, attrs, ngModel) {
 			if (attrs.readonly || attrs.disabled) {

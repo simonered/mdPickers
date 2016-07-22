@@ -29,6 +29,9 @@ function TimePickerCtrl($scope, $mdDialog, $mdMedia, time, autoSwitch, useUtc, u
     	
     	} else if (utcOffset) {
     		m = moment(m).utcOffset(utcOffset);
+    	
+    	} else {
+    		m = moment.isMoment(m) ? m : moment(m);
     	}
     	
     	return m;
@@ -300,8 +303,8 @@ module.directive("mdpTimePicker", ["$mdpTimePicker", "$timeout", function($mdpTi
             "placeholder": "@mdpPlaceholder",
             "autoSwitch": "=?mdpAutoSwitch",
             "disabled": "=?mdpDisabled",
-            "useUtc" : "=mdpUseUtc",
-            "utcOffset" : "=mdpUtcOffset"
+            "useUtc" : "=?mdpUseUtc",
+            "utcOffset" : "@mdpUtcOffset"
         },
         link: function(scope, element, attrs, ngModel, $transclude) {
             var inputElement = angular.element(element[0].querySelector('input')),
@@ -430,8 +433,8 @@ module.directive("mdpTimePicker", ["$mdpTimePicker", "$timeout", function($mdpTi
             "timeFormat": "@mdpFormat",
             "useMobile" : "=mdpUseMobile",
         	"autoSwitch" : "=?mdpAutoSwitch",
-        	"useUtc" : "=mdpUseUtc",
-            "utcOffset" : "=mdpUtcOffset"
+        	"useUtc" : "=?mdpUseUtc",
+            "utcOffset" : "@mdpUtcOffset"
         },
         link: function(scope, element, attrs, ngModel, $transclude) {
         	if ('undefined' !== typeof attrs.type && 'time' === attrs.type && ngModel 
