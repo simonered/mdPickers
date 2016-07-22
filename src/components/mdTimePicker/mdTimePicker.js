@@ -188,9 +188,14 @@ module.directive("mdpClock", ["$animate", "$timeout", function($animate, $timeou
                     y = ((event.pageY - containerCoords.top) - (event.currentTarget.offsetHeight / 2));
 
                 var deg = Math.round((Math.atan2(x, y) * (180 / Math.PI)));
+                
                 $timeout(function() {
                     ctrl.setTimeByDeg(deg + 180);
-                    if(ctrl.autoSwitch && ["mouseup", "click"].indexOf(event.type) !== -1 && timepickerCtrl) timepickerCtrl.switchView();
+                    if(ctrl.autoSwitch && ["mouseup", "click"].indexOf(event.type) !== -1 && timepickerCtrl) {
+                    	if (timepickerCtrl.currentView == timepickerCtrl.VIEW_HOURS) {
+                    		timepickerCtrl.switchView();
+                    	}
+                    }
                 });
             }; 
             
