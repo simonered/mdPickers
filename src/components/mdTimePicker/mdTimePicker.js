@@ -242,6 +242,7 @@ module.provider("$mdpTimePicker", function() {
                 controller:  ['$scope', '$mdDialog', '$mdMedia', 'time', 'autoSwitch', 'useUtc', 'utcOffset', TimePickerCtrl],
                 controllerAs: 'timepicker',
                 clickOutsideToClose: true,
+                skipHide: true,
                 template: '<md-dialog aria-label="" class="mdp-timepicker" ng-class="{ \'portrait\': !$mdMedia(\'gt-xs\') }">' +
                             '<md-dialog-content layout-gt-xs="row" layout-wrap>' +
                                 '<md-toolbar layout-gt-xs="column" layout-xs="row" layout-align="center center" flex class="mdp-timepicker-time md-hue-1 md-primary">' +
