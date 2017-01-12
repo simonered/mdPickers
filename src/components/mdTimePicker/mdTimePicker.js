@@ -21,7 +21,7 @@ function TimePickerCtrl($scope, $mdDialog, $mdMedia, time, autoSwitch, useUtc, u
     			return undefined;
     		}
     		
-    		m = (useUtc || utcOffset) ? moment().utc(true) : moment();
+    		m = useUtc || utcOffset ? moment().utc(true) : moment();
     	}
     	
     	if (useUtc) {
@@ -52,7 +52,7 @@ function TimePickerCtrl($scope, $mdDialog, $mdMedia, time, autoSwitch, useUtc, u
 	};
 	
 	this.now = function() {
-		self.time = this.normalizeMoment(moment());
+		self.time = this.normalizeMoment();
 	};
     
     this.cancel = function() {
@@ -475,8 +475,14 @@ module.directive("mdpTimePicker", ["$mdpTimePicker", "$timeout", function($mdpTi
 	    	            	return m;
 	    	            };
 	    	            
-	                    ngModel.$setViewValue(normalizeMoment(moment(time)).format(scope.timeFormat));
-	                    ngModel.$render();
+	    	            if (element[0].tagName == "input") {
+		                    ngModel.$setViewValue(normalizeMoment(time).format(scope.timeFormat));
+	    	            
+	    	            } else {
+	    	            	ngModel.$setViewValue(normalizeMoment(time).toDate());
+	    	            }
+	    	            
+	    	            ngModel.$render();
 	                });
 	            };
 	            
