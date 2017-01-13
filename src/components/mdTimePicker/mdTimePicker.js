@@ -443,7 +443,7 @@ module.directive("mdpTimePicker", ["$mdpTimePicker", "$timeout", function($mdpTi
             "utcOffset" : "@mdpUtcOffset"
         },
         link: function(scope, element, attrs, ngModel, $transclude) {
-        	if ('undefined' !== typeof attrs.type && 'time' === attrs.type && ngModel 
+        	if ('undefined' !== typeof attrs.type && 'time' === attrs.type.toLowerCase() && ngModel 
         			&& 'undefined' !== typeof scope.useMobile && scope.useMobile && detect.parse(navigator.userAgent).device.type.toLowerCase() === "mobile") {
         		// use mobile-system default picker
         		
@@ -475,7 +475,7 @@ module.directive("mdpTimePicker", ["$mdpTimePicker", "$timeout", function($mdpTi
 	    	            	return m;
 	    	            };
 	    	            
-	    	            if (element[0].tagName == "input") {
+	    	            if (element[0].tagName.toLowerCase() == "input") {
 		                    ngModel.$setViewValue(normalizeMoment(time).format(scope.timeFormat));
 	    	            
 	    	            } else {
