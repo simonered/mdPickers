@@ -421,14 +421,13 @@ function TimePickerCtrl($scope, $mdDialog, $mdMedia, time, autoSwitch, useUtc, u
     		m = useUtc || utcOffset ? moment().utc(true) : moment();
     	}
     	
+    	m = moment.isMoment(m) ? m : moment(m);
+    	
     	if (useUtc) {
     		m = moment(m).utc();
     	
     	} else if (utcOffset) {
     		m = moment(m).utcOffset(utcOffset);
-    	
-    	} else {
-    		m = moment.isMoment(m) ? m : moment(m);
     	}
     	
     	return m;
@@ -861,6 +860,8 @@ module.directive("mdpTimePicker", ["$mdpTimePicker", "$timeout", function($mdpTi
 	    	            	if (!m) {
 	    	            		return undefined;
 	    	            	}
+	    	            	
+	    	            	m = moment.isMoment(m) ? m : moment(m);
 	    	            	
 	    	            	if (scope.useUtc) {
 	    	            		m = moment(m).utc();
