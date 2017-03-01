@@ -257,7 +257,9 @@ function CalendarCtrl($scope) {
     };
     
     // init
-    this.updateDaysInMonth();
+    this.$onInit = function() {
+    	this.updateDaysInMonth();
+    }
 }
 
 module.directive("mdpCalendar", ["$animate", function($animate) {

@@ -264,7 +264,9 @@ function CalendarCtrl($scope) {
     };
     
     // init
-    this.updateDaysInMonth();
+    this.$onInit = function() {
+    	this.updateDaysInMonth();
+    }
 }
 
 module.directive("mdpCalendar", ["$animate", function($animate) {
@@ -531,7 +533,7 @@ function ClockCtrl($scope) {
         
     };
     
-    this.init = function() {
+    this.$onInit = function() {
         self.type = self.type || "hours";
         switch(self.type) {
             case TYPE_HOURS:
@@ -550,8 +552,6 @@ function ClockCtrl($scope) {
                 break;
         }
     };
-    
-    this.init();
 }
 
 module.directive("mdpClock", ["$animate", "$timeout", function($animate, $timeout) {

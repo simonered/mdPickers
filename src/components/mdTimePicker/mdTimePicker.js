@@ -134,7 +134,7 @@ function ClockCtrl($scope) {
         
     };
     
-    this.init = function() {
+    this.$onInit = function() {
         self.type = self.type || "hours";
         switch(self.type) {
             case TYPE_HOURS:
@@ -153,8 +153,6 @@ function ClockCtrl($scope) {
                 break;
         }
     };
-    
-    this.init();
 }
 
 module.directive("mdpClock", ["$animate", "$timeout", function($animate, $timeout) {
