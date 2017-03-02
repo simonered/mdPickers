@@ -241,8 +241,8 @@ module.provider("$mdpTimePicker", function() {
                 clickOutsideToClose: true,
                 skipHide: true,
                 template: '<md-dialog aria-label="" class="mdp-timepicker" ng-class="{ \'portrait\': !$mdMedia(\'gt-xs\') }">' +
-                            '<md-dialog-content layout-gt-xs="row" layout-wrap>' +
-                                '<md-toolbar layout-gt-xs="column" layout-xs="row" layout-align="center center" flex class="mdp-timepicker-time md-hue-1 md-primary">' +
+                            '<md-dialog-content flex layout-gt-xs="row" layout-xs="column" layout-wrap>' +
+                                '<md-toolbar layout-gt-xs="column" layout-xs="row" layout-align="center center" flex-xs="100" flex-gt-xs="35" class="mdp-timepicker-time md-hue-1 md-primary">' +
                                     '<div class="mdp-timepicker-selected-time">' +
                                         '<span ng-class="{ \'active\': timepicker.currentView == timepicker.VIEW_HOURS }" ng-click="timepicker.currentView = timepicker.VIEW_HOURS">{{ timepicker.time.format("h") }}</span>:' + 
                                         '<span ng-class="{ \'active\': timepicker.currentView == timepicker.VIEW_MINUTES }" ng-click="timepicker.currentView = timepicker.VIEW_MINUTES">{{ timepicker.time.format("mm") }}</span>' +
@@ -252,17 +252,17 @@ module.provider("$mdpTimePicker", function() {
                                         '<span ng-click="timepicker.setPM()" ng-class="{ \'active\': timepicker.time.hours() >= 12 }">PM</span>' +
                                     '</div>' + 
                                 '</md-toolbar>' +
-                                '<div>' +
-                                    '<div class="mdp-clock-switch-container" ng-switch="timepicker.currentView" layout layout-align="center center">' +
+                                '<div flex layout="column">' +
+                                    '<div class="mdp-clock-switch-container" ng-switch="timepicker.currentView" flex layout layout-align="center center">' +
 	                                    '<mdp-clock class="mdp-animation-zoom" auto-switch="timepicker.autoSwitch" time="timepicker.time" type="hours" ng-switch-when="1"></mdp-clock>' +
 	                                    '<mdp-clock class="mdp-animation-zoom" auto-switch="timepicker.autoSwitch" time="timepicker.time" type="minutes" ng-switch-when="2"></mdp-clock>' +
                                     '</div>' +
                                     
                                     '<md-dialog-actions layout="row">' +
-                                    	'<md-button ng-click="timepicker.now()" aria-label="' + LABEL_NOW + '">' + LABEL_NOW + '</md-button>' +
+                                    	'<md-button style="margin: 0" ng-click="timepicker.now()" aria-label="' + LABEL_NOW + '">' + LABEL_NOW + '</md-button>' +
 	                                	'<span flex></span>' +
-                                        '<md-button ng-click="timepicker.cancel()" aria-label="' + LABEL_CANCEL + '">' + LABEL_CANCEL + '</md-button>' +
-                                        '<md-button ng-click="timepicker.confirm()" class="md-primary" aria-label="' + LABEL_OK + '">' + LABEL_OK + '</md-button>' +
+                                        '<md-button style="margin: 0" ng-click="timepicker.cancel()" aria-label="' + LABEL_CANCEL + '">' + LABEL_CANCEL + '</md-button>' +
+                                        '<md-button style="margin: 0" ng-click="timepicker.confirm()" class="md-primary" aria-label="' + LABEL_OK + '">' + LABEL_OK + '</md-button>' +
                                     '</md-dialog-actions>' +
                                 '</div>' +
                             '</md-dialog-content>' +
@@ -274,7 +274,7 @@ module.provider("$mdpTimePicker", function() {
                     useUtc: options.useUtc, 
                     utcOffset: options.utcOffset
                 },
-                skipHide: true
+                fullscreen: options.fullscreen
             });
         };
     
@@ -307,7 +307,8 @@ module.directive("mdpTimePicker", ["$mdpTimePicker", "$timeout", function($mdpTi
             "autoSwitch": "=?mdpAutoSwitch",
             "disabled": "=?mdpDisabled",
             "useUtc" : "=?mdpUseUtc",
-            "utcOffset" : "@mdpUtcOffset"
+            "utcOffset" : "@mdpUtcOffset",
+            "fullscreen" : "=mdpFullscreen"
         },
         link: function(scope, element, attrs, ngModel, $transclude) {
             var inputElement = angular.element(element[0].querySelector('input')),
@@ -407,7 +408,8 @@ module.directive("mdpTimePicker", ["$mdpTimePicker", "$timeout", function($mdpTi
                     targetEvent: ev,
                     autoSwitch: scope.autoSwitch,
                     useUtc: scope.useUtc,
-                    utcOffset: scope.utcOffset
+                    utcOffset: scope.utcOffset,
+                    fullscreen: scope.fullscreen
                     
                 }).then(function(time) {
                     updateTime(time, true);
@@ -437,7 +439,8 @@ module.directive("mdpTimePicker", ["$mdpTimePicker", "$timeout", function($mdpTi
             "useMobile" : "=mdpUseMobile",
         	"autoSwitch" : "=?mdpAutoSwitch",
         	"useUtc" : "=?mdpUseUtc",
-            "utcOffset" : "@mdpUtcOffset"
+            "utcOffset" : "@mdpUtcOffset",
+            "fullscreen" : "=mdpFullscreen"
         },
         link: function(scope, element, attrs, ngModel, $transclude) {
         	if ('undefined' !== typeof attrs.type && 'time' === attrs.type.toLowerCase() && ngModel 
@@ -450,11 +453,14 @@ module.directive("mdpTimePicker", ["$mdpTimePicker", "$timeout", function($mdpTi
 	            scope.useUtc = scope.useUtc || false;
 	            
 	            var showPicker = function(ev) {
+	            	ev.preventDefault();
+	            	
 	                $mdpTimePicker(ngModel.$modelValue, {
 	                    targetEvent: ev,
 	                    autoSwitch: scope.autoSwitch,
 	                    useUtc: scope.useUtc,
-	                    utcOffset: scope.utcOffset
+	                    utcOffset: scope.utcOffset,
+	                    fullscreen: scope.fullscreen
 	                    
 	                }).then(function(time) {
 	                	var normalizeMoment = function(m) {

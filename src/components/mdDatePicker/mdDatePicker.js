@@ -154,11 +154,12 @@ module.provider("$mdpDatePicker", function() {
     };
     
     this.$get = ["$mdDialog", function($mdDialog) {
-        var datePicker = function(targetEvent, currentDate, minDate, maxDate, useUtc, utcOffset) {
+        var datePicker = function(currentDate, options) {
             if (!angular.isDate(currentDate)) currentDate = null;
-            if (!angular.isDate(minDate)) minDate = null;
-            if (!angular.isDate(maxDate)) maxDate = null;
-            if (!useUtc || "undefined" === typeof useUtc) useUtc = false;
+            if (!angular.isObject(options)) options = {};
+            if (!angular.isDate(options.minDate)) options.minDate = null;
+            if (!angular.isDate(options.maxDate)) options.maxDate = null;
+            if (!options.useUtc || "undefined" === typeof options.useUtc) options.useUtc = false;
     
             return $mdDialog.show({
                 controller:  ['$scope', '$mdDialog', '$mdMedia', '$timeout', 'currentDate', 'minDate', 'maxDate', 'useUtc', 'utcOffset', DatePickerCtrl],
@@ -191,14 +192,15 @@ module.provider("$mdpDatePicker", function() {
                                 '</div>' +
                             '</md-dialog-content>' +
                         '</md-dialog>',
-                targetEvent: targetEvent,
+                targetEvent: options.targetEvent,
                 locals: {
                     currentDate: currentDate,
-                    minDate: minDate, 
-                    maxDate: maxDate,
-                    useUtc: useUtc, 
-                    utcOffset: utcOffset
-                }
+                    minDate: options.minDate, 
+                    maxDate: options.maxDate,
+                    useUtc: options.useUtc, 
+                    utcOffset: options.utcOffset
+                },
+                fullscreen: options.fullscreen,
             });
         };
     
@@ -331,7 +333,8 @@ module.directive("mdpDatePicker", ["$mdpDatePicker", "$timeout", function($mdpDa
             "maxDate": "=mdpMaxDate",
             "useMobile" : "=?mdpUseMobile",
             "useUtc" : "=?mdpUseUtc",
-            "utcOffset" : "@mdpUtcOffset"
+            "utcOffset" : "@mdpUtcOffset",
+            "fullscreen" : "=mdpFullscreen"
         },
         link: function(scope, element, attrs, ngModel) {
 			if (attrs.readonly || attrs.disabled) {
@@ -343,49 +346,63 @@ module.directive("mdpDatePicker", ["$mdpDatePicker", "$timeout", function($mdpDa
         		// use mobile-system default picker
         		
         	} else {
-                angular.element(element).on("click", function(ev) {
-                	ev.preventDefault();
-                	
-                	$mdpDatePicker(ev, ngModel.$modelValue, scope.minDate, scope.maxDate, scope.useUtc, scope.utcOffset).then(function(selectedDate) {
-                		$timeout(function() {
-                			var normalizeMoment = function(m) {
-                		    	if (!m) {
-                		    		return undefined;
-                		    	}
-                		    	
-                		    	if (scope.useUtc) {
-                		    		m = moment.utc([m.year(), m.month(), m.date()]);
-                		    	
-                		    	} else if (scope.utcOffset) {
-                		    		m = moment.utc([m.year(), m.month(), m.date()]).utcOffset(scope.utcOffset, true);
-                		    	}
-                		    	
-                		    	return m;
-                		    };
-                			
-                			var selectedMoment = normalizeMoment(moment(selectedDate));
-                			var minMoment = scope.minDate ? normalizeMoment(moment(scope.minDate)) : null;
-                			var maxMoment = scope.maxDate ? normalizeMoment(moment(scope.maxDate)) : null;
-                			
-                			// validate min and max date
-                        	if (minMoment && maxMoment) {
-                        		if (maxMoment.isBefore(minMoment, "days")) {
-                        			maxMoment = normalizeMoment(moment(minMoment)).add(1, 'days');
-                        		}
-                        	}
-                			
-                			if (minMoment && minMoment.isValid()) {
-                				ngModel.$setValidity('mindate', selectedMoment.isSameOrAfter(minMoment, "days"));
-                			}
-                			
-                			if (maxMoment && maxMoment.isValid()) {
-                				ngModel.$setValidity('maxdate', selectedMoment.isSameOrBefore(maxMoment, "days"));
-                			}
-                			
-                			scope.ngModel = selectedMoment.toDate();
-                          });
-                      });
-                });
+        		var showPicker = function(ev) {
+        			ev.preventDefault();
+        			
+    				$mdpDatePicker(ngModel.$modelValue, {
+	                    targetEvent: ev,
+	                    autoSwitch: scope.minDate,
+	                    minDate: scope.maxDate,
+	                    useUtc: scope.useUtc,
+	                    utcOffset: scope.utcOffset,
+	                    fullscreen: scope.fullscreen
+	                    
+	                }).then(function(selectedDate) {
+	            		$timeout(function() {
+	            			var normalizeMoment = function(m) {
+	            		    	if (!m) {
+	            		    		return undefined;
+	            		    	}
+	            		    	
+	            		    	if (scope.useUtc) {
+	            		    		m = moment.utc([m.year(), m.month(), m.date()]);
+	            		    	
+	            		    	} else if (scope.utcOffset) {
+	            		    		m = moment.utc([m.year(), m.month(), m.date()]).utcOffset(scope.utcOffset, true);
+	            		    	}
+	            		    	
+	            		    	return m;
+	            		    };
+	            			
+	            			var selectedMoment = normalizeMoment(moment(selectedDate));
+	            			var minMoment = scope.minDate ? normalizeMoment(moment(scope.minDate)) : null;
+	            			var maxMoment = scope.maxDate ? normalizeMoment(moment(scope.maxDate)) : null;
+	            			
+	            			// validate min and max date
+	                    	if (minMoment && maxMoment) {
+	                    		if (maxMoment.isBefore(minMoment, "days")) {
+	                    			maxMoment = normalizeMoment(moment(minMoment)).add(1, 'days');
+	                    		}
+	                    	}
+	            			
+	            			if (minMoment && minMoment.isValid()) {
+	            				ngModel.$setValidity('mindate', selectedMoment.isSameOrAfter(minMoment, "days"));
+	            			}
+	            			
+	            			if (maxMoment && maxMoment.isValid()) {
+	            				ngModel.$setValidity('maxdate', selectedMoment.isSameOrBefore(maxMoment, "days"));
+	            			}
+	            			
+	            			scope.ngModel = selectedMoment.toDate();
+	                      });
+	                  });
+        		};
+        		
+        		element.on("click", showPicker);
+ 	            
+ 	            scope.$on("$destroy", function() {
+ 	                element.off("click", showPicker);
+ 	            });
             }
         }
     };
