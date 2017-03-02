@@ -362,7 +362,7 @@ module.directive("mdpDatePicker", ["$mdpDatePicker", "$timeout", function($mdpDa
 	                    minDate: scope.maxDate,
 	                    useUtc: scope.useUtc,
 	                    utcOffset: scope.utcOffset,
-	                    fullscreen: scope.fullscreen
+	                    fullscreen: scope.fullscreen || false
 	                    
 	                }).then(function(selectedDate) {
 	            		$timeout(function() {
@@ -657,7 +657,7 @@ module.provider("$mdpTimePicker", function() {
                 clickOutsideToClose: true,
                 skipHide: true,
                 template: '<md-dialog aria-label="" class="mdp-timepicker" ng-class="{ \'portrait\': !$mdMedia(\'gt-xs\') }">' +
-                            '<md-dialog-content flex layout-gt-xs="row" layout-xs="column" layout-wrap>' +
+                            '<md-dialog-content flex layout-gt-xs="row" layout-wrap>' +
                                 '<md-toolbar layout-gt-xs="column" layout-xs="row" layout-align="center center" flex-xs="100" flex-gt-xs="35" class="mdp-timepicker-time md-hue-1 md-primary">' +
                                     '<div class="mdp-timepicker-selected-time">' +
                                         '<span ng-class="{ \'active\': timepicker.currentView == timepicker.VIEW_HOURS }" ng-click="timepicker.currentView = timepicker.VIEW_HOURS">{{ timepicker.time.format("h") }}</span>:' + 
@@ -674,11 +674,12 @@ module.provider("$mdpTimePicker", function() {
 	                                    '<mdp-clock class="mdp-animation-zoom" auto-switch="timepicker.autoSwitch" time="timepicker.time" type="minutes" ng-switch-when="2"></mdp-clock>' +
                                     '</div>' +
                                     
-                                    '<md-dialog-actions layout="row">' +
-                                    	'<md-button style="margin: 0" ng-click="timepicker.now()" aria-label="' + LABEL_NOW + '">' + LABEL_NOW + '</md-button>' +
-	                                	'<span flex></span>' +
+                                    '<md-dialog-actions layout="row" layout-align="center center">' +
+//                                    	'<md-button style="margin: 0" ng-click="timepicker.now()" aria-label="' + LABEL_NOW + '">' + LABEL_NOW + '</md-button>' +
+//	                                	'<span flex></span>' +
                                         '<md-button style="margin: 0" ng-click="timepicker.cancel()" aria-label="' + LABEL_CANCEL + '">' + LABEL_CANCEL + '</md-button>' +
                                         '<md-button style="margin: 0" ng-click="timepicker.confirm()" class="md-primary" aria-label="' + LABEL_OK + '">' + LABEL_OK + '</md-button>' +
+//                                        '<span flex></span>' +
                                     '</md-dialog-actions>' +
                                 '</div>' +
                             '</md-dialog-content>' +
@@ -876,7 +877,7 @@ module.directive("mdpTimePicker", ["$mdpTimePicker", "$timeout", function($mdpTi
 	                    autoSwitch: scope.autoSwitch,
 	                    useUtc: scope.useUtc,
 	                    utcOffset: scope.utcOffset,
-	                    fullscreen: scope.fullscreen
+	                    fullscreen: scope.fullscreen || false
 	                    
 	                }).then(function(time) {
 	                	var normalizeMoment = function(m) {

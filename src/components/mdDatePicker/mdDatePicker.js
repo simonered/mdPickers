@@ -355,7 +355,7 @@ module.directive("mdpDatePicker", ["$mdpDatePicker", "$timeout", function($mdpDa
 	                    minDate: scope.maxDate,
 	                    useUtc: scope.useUtc,
 	                    utcOffset: scope.utcOffset,
-	                    fullscreen: scope.fullscreen
+	                    fullscreen: scope.fullscreen || false
 	                    
 	                }).then(function(selectedDate) {
 	            		$timeout(function() {
