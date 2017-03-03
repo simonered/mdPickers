@@ -1,3 +1,7 @@
+### 0.7.11
+** Breaking changes **
+* Dropped Detect.js (NO LONGER MAINTAINED) in favour of Bowser
+
 ### 0.7.4
 * added _skipHide_ to pickers to allow multiple dialogs opening (pickers inside dialog): without _skipHide_ only one open dialog is allowed, making pickers close his container dialog. 
 
