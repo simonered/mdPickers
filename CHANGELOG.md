@@ -1,5 +1,5 @@
 ### 0.7.11
-** Breaking changes **
+**Breaking changes**
 * Dropped Detect.js (NO LONGER MAINTAINED) in favour of Bowser
 
 ### 0.7.4
