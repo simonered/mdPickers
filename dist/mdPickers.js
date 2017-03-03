@@ -349,7 +349,7 @@ module.directive("mdpDatePicker", ["$mdpDatePicker", "$timeout", function($mdpDa
 			}
         	
         	if ('undefined' !== typeof attrs.type && 'date' === attrs.type.toLowerCase() && ngModel 
-        			&& 'undefined' !== typeof scope.useMobile && scope.useMobile && detect.parse(navigator.userAgent).device.type.toLowerCase() === "mobile") {
+        			&& 'undefined' !== typeof scope.useMobile && scope.useMobile && (bowser.mobile || bowser.tablet)) {
         		// use mobile-system default picker
         		
         	} else {
@@ -861,7 +861,7 @@ module.directive("mdpTimePicker", ["$mdpTimePicker", "$timeout", function($mdpTi
         },
         link: function(scope, element, attrs, ngModel, $transclude) {
         	if ('undefined' !== typeof attrs.type && 'time' === attrs.type.toLowerCase() && ngModel 
-        			&& 'undefined' !== typeof scope.useMobile && scope.useMobile && detect.parse(navigator.userAgent).device.type.toLowerCase() === "mobile") {
+        			&& 'undefined' !== typeof scope.useMobile && scope.useMobile && (bowser.mobile || bowser.tablet)) {
         		// use mobile-system default picker
         		
         	} else {        	
