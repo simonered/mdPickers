@@ -322,7 +322,7 @@ mdp-calendar {
 }
 .mdp-timepicker .mdp-clock-switch-container {
   padding: 20px;
-  width: 309px;
+  min-width: 309px;
 }
 .mdp-timepicker .mdp-timepicker-time {
   padding: 15px;

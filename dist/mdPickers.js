@@ -172,9 +172,9 @@ module.provider("$mdpDatePicker", function() {
                 controller:  ['$scope', '$mdDialog', '$mdMedia', '$timeout', 'currentDate', 'minDate', 'maxDate', 'useUtc', 'utcOffset', DatePickerCtrl],
                 controllerAs: 'datepicker',
                 clickOutsideToClose: true,
-                skipHide: true,
-                template: '<md-dialog aria-label="" class="mdp-datepicker" ng-class="{ \'portrait\': !$mdMedia(\'gt-xs\') }">' +
-                            '<md-dialog-content layout="row" layout-wrap>' +
+                multiple: true,
+                template: '<md-dialog aria-label="Date Picker" class="mdp-datepicker" ng-class="{ \'portrait\': !$mdMedia(\'gt-xs\') }">' +
+                            '<md-dialog-content flex layout="row" layout-wrap>' +
                                 '<div layout="column" layout-align="start center">' +
                                     '<md-toolbar layout-align="start start" flex class="mdp-datepicker-date-wrapper md-hue-1 md-primary" layout="column">' +
                                         '<span class="mdp-datepicker-year" ng-click="datepicker.showYear()" ng-class="{ \'active\': datepicker.selectingYear }">{{ datepicker.currentMoment.format(\'YYYY\') }}</span>' +
@@ -655,10 +655,10 @@ module.provider("$mdpTimePicker", function() {
                 controller:  ['$scope', '$mdDialog', '$mdMedia', 'time', 'autoSwitch', 'useUtc', 'utcOffset', TimePickerCtrl],
                 controllerAs: 'timepicker',
                 clickOutsideToClose: true,
-                skipHide: true,
-                template: '<md-dialog aria-label="" class="mdp-timepicker" ng-class="{ \'portrait\': !$mdMedia(\'gt-xs\') }">' +
-                            '<md-dialog-content flex layout-gt-xs="row" layout-wrap>' +
-                                '<md-toolbar layout-gt-xs="column" layout-xs="row" layout-align="center center" flex-xs="100" flex-gt-xs="35" class="mdp-timepicker-time md-hue-1 md-primary">' +
+                multiple: true,
+                template: '<md-dialog aria-label="Time Picker" class="mdp-timepicker" ng-class="{\'portrait\': !$mdMedia(\'gt-xs\')}">' +
+                            '<md-dialog-content flex layout-xs="column" layout-gt-xs="row" ng-class="{\'layout-wrap\': $mdMedia(\'gt-xs\')}">' +
+                                '<md-toolbar layout-gt-xs="column" layout-xs="row" layout-align="center center" flex-gt-xs="35" class="mdp-timepicker-time md-hue-1 md-primary">' +
                                     '<div class="mdp-timepicker-selected-time">' +
                                         '<span ng-class="{ \'active\': timepicker.currentView == timepicker.VIEW_HOURS }" ng-click="timepicker.currentView = timepicker.VIEW_HOURS">{{ timepicker.time.format("h") }}</span>:' + 
                                         '<span ng-class="{ \'active\': timepicker.currentView == timepicker.VIEW_MINUTES }" ng-click="timepicker.currentView = timepicker.VIEW_MINUTES">{{ timepicker.time.format("mm") }}</span>' +
@@ -673,7 +673,6 @@ module.provider("$mdpTimePicker", function() {
 	                                    '<mdp-clock class="mdp-animation-zoom" auto-switch="timepicker.autoSwitch" time="timepicker.time" type="hours" ng-switch-when="1"></mdp-clock>' +
 	                                    '<mdp-clock class="mdp-animation-zoom" auto-switch="timepicker.autoSwitch" time="timepicker.time" type="minutes" ng-switch-when="2"></mdp-clock>' +
                                     '</div>' +
-                                    
                                     '<md-dialog-actions layout="row" layout-align="center center">' +
 //                                    	'<md-button style="margin: 0" ng-click="timepicker.now()" aria-label="' + LABEL_NOW + '">' + LABEL_NOW + '</md-button>' +
 //	                                	'<span flex></span>' +

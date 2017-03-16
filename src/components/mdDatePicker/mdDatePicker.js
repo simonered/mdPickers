@@ -165,9 +165,9 @@ module.provider("$mdpDatePicker", function() {
                 controller:  ['$scope', '$mdDialog', '$mdMedia', '$timeout', 'currentDate', 'minDate', 'maxDate', 'useUtc', 'utcOffset', DatePickerCtrl],
                 controllerAs: 'datepicker',
                 clickOutsideToClose: true,
-                skipHide: true,
-                template: '<md-dialog aria-label="" class="mdp-datepicker" ng-class="{ \'portrait\': !$mdMedia(\'gt-xs\') }">' +
-                            '<md-dialog-content layout="row" layout-wrap>' +
+                multiple: true,
+                template: '<md-dialog aria-label="Date Picker" class="mdp-datepicker" ng-class="{ \'portrait\': !$mdMedia(\'gt-xs\') }">' +
+                            '<md-dialog-content flex layout="row" layout-wrap>' +
                                 '<div layout="column" layout-align="start center">' +
                                     '<md-toolbar layout-align="start start" flex class="mdp-datepicker-date-wrapper md-hue-1 md-primary" layout="column">' +
                                         '<span class="mdp-datepicker-year" ng-click="datepicker.showYear()" ng-class="{ \'active\': datepicker.selectingYear }">{{ datepicker.currentMoment.format(\'YYYY\') }}</span>' +
