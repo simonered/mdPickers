@@ -94,7 +94,8 @@
   padding: 0;
   min-width: 0px;
   min-height: 0px;
-  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+          box-shadow: none !important;
   background-color: transparent;
 }
 .mdp-calendar-days {
@@ -117,7 +118,8 @@
   padding: 0;
   min-width: 0px;
   min-height: 0px;
-  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+          box-shadow: none !important;
   background-color: transparent;
 }
 .mdp-calendar-days .md-button[disabled] {
@@ -263,7 +265,8 @@ mdp-calendar {
   background: #ededed;
 }
 .mdp-clock .md-button {
-  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+          box-shadow: none !important;
   background-color: transparent;
   display: block;
   position: absolute;

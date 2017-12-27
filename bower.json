@@ -1,6 +1,6 @@
 {
   "name": "mdPickers",
-  "version": "0.7.13",
+  "version": "0.7.14",
   "homepage": "https://github.com/simonered/mdPickers",
   "authors": [
     "simonered"
@@ -26,9 +26,9 @@
     "tests"
   ],
   "dependencies": {
-    "angular": "~1.6.2",
-    "angular-material": "~1.1.3",
-    "moment": "~2.17.1",
+    "angular": "~1.6.7",
+    "angular-material": "~1.1.5",
+    "moment": "~2.20.1",
     "bowser" : "latest"
   }
 }

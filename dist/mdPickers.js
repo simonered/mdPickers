@@ -358,8 +358,8 @@ module.directive("mdpDatePicker", ["$mdpDatePicker", "$timeout", function($mdpDa
         			
     				$mdpDatePicker(ngModel.$modelValue, {
 	                    targetEvent: ev,
-	                    autoSwitch: scope.minDate,
-	                    minDate: scope.maxDate,
+	                    minDate: scope.minDate,
+	                    maxDate: scope.maxDate,
 	                    useUtc: scope.useUtc,
 	                    utcOffset: scope.utcOffset,
 	                    fullscreen: scope.fullscreen || false
